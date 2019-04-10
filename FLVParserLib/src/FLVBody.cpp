@@ -55,12 +55,13 @@ int CFlvBody::Parse(BYTE *FileBuf, UINT64 &byteCnt, UINT64 fileSize)
 			return kFlvParserError_IllegalTagType;
 		}
 
+		tag->m_prevTagSize = prevTagSize;
 		err = tag->Parse_flv_tag();
 		if (err < 0)
 		{
 			return err;
 		}
-		tag->m_prevTagSize = prevTagSize;
+		
 		tag->Dump_tag_info();
 
 		if (m_tagCount == 0)

@@ -38,6 +38,7 @@ int CFlvTag::Parse_flv_tag()
 		CVideoTag *videoTagPtr = dynamic_cast<CVideoTag *>(this);
 		if (NULL != videoTagPtr)
 		{
+			videoTagPtr->m_tagMaxSize = m_prevTagSize; // vidoe tag 最大size 不会超过 flv tag size
 			videoTagPtr->Parse_video_tag_detail();			
 		}
 	}

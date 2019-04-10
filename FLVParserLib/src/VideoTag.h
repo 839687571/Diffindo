@@ -21,7 +21,7 @@ typedef struct NALUnit
 		sliceType = 0;
 		nextNalu = NULL;
 	}
-	int Get_nal_unit(BYTE *inputBuffer, bool paramaterSets)
+	int Get_nal_unit(BYTE *inputBuffer, bool paramaterSets, int maxSize)
 	{
 		int sizeLength = 4;
 		if (paramaterSets)
@@ -32,6 +32,10 @@ typedef struct NALUnit
 		Read_data_lsb(&naluLength, inputBuffer, sizeLength);
 		if (naluLength == 0)
 		{
+			return kFlvParserError_EmptyNALUnit;
+		}
+
+		if (naluLength <0 || naluLength > maxSize) {  // 错误的长度
 			return kFlvParserError_EmptyNALUnit;
 		}
 		naluBuffer = new BYTE[naluLength];
@@ -98,7 +102,7 @@ typedef struct AVCDecoderConfigurationRecord
 		if (numSPS == 1)
 		{
 			sps = new NALUnit;
-			sps->Get_nal_unit(buf + bytePosition, true);
+			sps->Get_nal_unit(buf + bytePosition, true,100000); // 一个很大的默认值. FIXME 需要计算 SPS 应该占用多少内存
 			bytePosition += (2 + sps->naluLength);
 		}
 		else
@@ -109,7 +113,7 @@ typedef struct AVCDecoderConfigurationRecord
 		if (numPPS == 1)
 		{
 			pps = new NALUnit;
-			pps->Get_nal_unit(buf + bytePosition, true);
+			pps->Get_nal_unit(buf + bytePosition, true, 100000);
 		} 
 		else
 		{
@@ -150,6 +154,8 @@ public:
 	AVCDecoderConfigurationRecord *m_decCfgRcrd;
 
 	NALUnit *m_nalu;
+
+	int m_tagMaxSize=0;
 
 private:
 	void dump_video_payload_info();

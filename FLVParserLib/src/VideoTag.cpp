@@ -132,7 +132,7 @@ int CVideoTag::parse_nal_units()
 	while (totalNalLength < m_dataSize - 5)
 	{
 		NALUnit *tempUnit = new NALUnit;
-		err = tempUnit->Get_nal_unit(nalsBuffer + totalNalLength, false);
+		err = tempUnit->Get_nal_unit(nalsBuffer + totalNalLength, false,m_tagMaxSize);
 		if (err < 0)
 		{
 			return err;
